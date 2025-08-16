@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mobile Style Calculator</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+    }
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #ececec;
+    }
+    .calculator {
+      background: #222;
+      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      width: 320px;
+    }
+    .display {
+      background: #000;
+      color: #0f0;
+      font-size: 2rem;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      text-align: right;
+      overflow-x: auto;
+      min-height: 50px;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    button {
+      padding: 20px;
+      font-size: 1.3rem;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    button:hover {
+      opacity: 0.85;
+    }
+    .num {
+      background: #333;
+      color: #fff;
+    }
+    .operator {
+      background: #ff9500;
+      color: #fff;
+    }
+    .equal {
+      background: #28a745;
+      color: #fff;
+      grid-row: span 2; /* makes it tall */
+    }
+    .clear {
+      background: #dc3545;
+      color: #fff;
+    }
+    .zero {
+      grid-column: span 2; /* makes it wide */
+    }
+    .backspace {
+      background: #555;
+      color: #fff;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator">
+    <div id="display" class="display">0</div>
+    <div class="buttons">
+      <button class="clear">C</button>
+      <button class="operator">/</button>
+      <button class="operator">*</button>
+      <button class="backspace">⌫</button>
+
+      <button class="num">7</button>
+      <button class="num">8</button>
+      <button class="num">9</button>
+      <button class="operator">-</button>
+
+      <button class="num">4</button>
+      <button class="num">5</button>
+      <button class="num">6</button>
+      <button class="operator">+</button>
+
+      <button class="num">1</button>
+      <button class="num">2</button>
+      <button class="num">3</button>
+      <button class="equal">=</button>
+
+      <button class="num zero">0</button>
+      <button class="num">.</button>
+    </div>
+  </div>
+
+  <script>
+    const display = document.getElementById("display");
+    const buttons = document.querySelectorAll("button");
+    let resetDisplay = false;
+
+    function updateDisplay(value) {
+      if (resetDisplay) {
+        display.textContent = value;
+        resetDisplay = false;
+      } else {
+        display.textContent = display.textContent === "0" ? value : display.textContent + value;
+      }
+    }
+
+    buttons.forEach(button => {
+      button.addEventListener("click", () => {
+        const value = button.textContent;
+
+        if (button.classList.contains("num")) {
+          updateDisplay(value);
+        }
+        else if (button.classList.contains("operator")) {
+          display.textContent += " " + value + " ";
+        }
+        else if (button.classList.contains("equal")) {
+          try {
+            const result = eval(display.textContent);
+            display.textContent = result;
+          } catch (error) {
+            display.textContent = "Error";
+          }
+          resetDisplay = true;
+        }
+        else if (button.classList.contains("clear")) {
+          display.textContent = "0";
+        }
+        else if (button.classList.contains("backspace")) {
+          display.textContent = display.textContent.slice(0, -1) || "0";
+        }
+      });
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if ((e.key >= 0 && e.key <= 9) || e.key === ".") {
+        updateDisplay(e.key);
+      } else if (["+", "-", "*", "/"].includes(e.key)) {
+        display.textContent += " " + e.key + " ";
+      } else if (e.key === "Enter" || e.key === "=") {
+        try {
+          const result = eval(display.textContent);
+          display.textContent = result;
+        } catch {
+          display.textContent = "Error";
+        }
+        resetDisplay = true;
+      } else if (e.key === "Backspace") {
+        display.textContent = display.textContent.slice(0, -1) || "0";
+      } else if (e.key.toLowerCase() === "c") {
+        display.textContent = "0";
+      }
+    });
+  </script>
+
+</body>
+</html>
